@@ -1,76 +1,68 @@
-const mysql = require("mysql2")
-const cors = require("cors")
-const express = require("express")
-const app = express()
+const sqlite3 = require("sqlite3").verbose();
+const cors = require("cors");
+const express = require("express");
+const app = express();
 
-// IF YOU GET A 'CANNOT GET /' ERROR:
-// MAKE SURE YOU ARE IN LOCALHOST:3000/DATA
+app.use(cors({ origin: true, credentials: true }));
 
+const db = new sqlite3.Database("database.db", sqlite3.OPEN_READWRITE, (err) => {
+  if (err) {
+    console.error("Error opening database:", err.message);
+  } else {
+    console.log("Connected to the database.");
+  }
+});
 
-app.use(cors({origin: true, credentials: true}))
-
-const connection = mysql.createConnection({
-    host:'localhost',
-    user:'root',
-    password:'admin',
-    database:'wtdb'
-})
-
-connection.connect((err)=>{
-    if(err){
-        console.log("Error connection to database:",err.stack)
-        return
+app.get("/all", (req, res) => {
+  db.all("SELECT * FROM ammo", (error, rows) => {
+    if (error) {
+      console.error("Error getting data:", error.message);
+      return;
     }
-    else{
-        console.log("Connected to database as id:",connection.threadId)
-    }
-})
+    res.send(rows);
+  });
+});
 
-app.get('/all',(req,res)=>{
-    connection.query("SELECT * FROM ammo",(error,results)=>{
-        if(error){
-            console.log("Error getting data:",error.stack)
-            return
-        }
-        res.send(results)
-    })
-})
-app.get('/type/ap',(req,res)=>{
-    connection.query("SELECT * FROM ammo WHERE ShellType='AP'",(error,results)=>{
-        if(error){
-            console.log("Error getting data:",error.stack)
-            return
-        }
-        res.send(results)
-    })
-})
-app.get('/type/saphei',(req,res)=>{
-    connection.query("SELECT * FROM ammo WHERE ShellType='SAPHEI'",(error,results)=>{
-        if(error){
-            console.log("Error getting data:",error.stack)
-            return
-        }
-        res.send(results)
-    })
-})
-app.get('/type/he',(req,res)=>{
-    connection.query("SELECT * FROM ammo WHERE ShellType='HE'",(error,results)=>{
-        if(error){
-            console.log("Error getting data:",error.stack)
-            return
-        }
-        res.send(results)
-    })
-})
-app.get('/type/heat',(req,res)=>{
-    connection.query("SELECT * FROM ammo WHERE ShellType='HEAT'",(error,results)=>{
-        if(error){
-            console.log("Error getting data:",error.stack)
-            return
-        }
-        res.send(results)
-    })
-})
-app.listen(3000,()=>{
-    console.log("Server up.")
-})
+app.get("/type/ap", (req, res) => {
+  db.all("SELECT * FROM ammo WHERE ShellType='AP'", (error, rows) => {
+    if (error) {
+      console.error("Error getting data:", error.message);
+      return;
+    }
+    res.send(rows);
+  });
+});
+
+app.get("/type/saphei", (req, res) => {
+  db.all("SELECT * FROM ammo WHERE ShellType='SAPHEI'", (error, rows) => {
+    if (error) {
+      console.error("Error getting data:", error.message);
+      return;
+    }
+    res.send(rows);
+  });
+});
+
+app.get("/type/he", (req, res) => {
+  db.all("SELECT * FROM ammo WHERE ShellType='HE'", (error, rows) => {
+    if (error) {
+      console.error("Error getting data:", error.message);
+      return;
+    }
+    res.send(rows);
+  });
+});
+
+app.get("/type/heat", (req, res) => {
+  db.all("SELECT * FROM ammo WHERE ShellType='HEAT'", (error, rows) => {
+    if (error) {
+      console.error("Error getting data:", error.message);
+      return;
+    }
+    res.send(rows);
+  });
+});
+
+app.listen(3000, () => {
+  console.log("Server up.");
+});
