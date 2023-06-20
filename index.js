@@ -13,13 +13,7 @@ const db = new sqlite3.Database("database.db", sqlite3.OPEN_READWRITE, (err) => 
   }
 });
 app.get("/test",(req,res) => {
-  if(error){
-    console.error("Error on test:",error.message)
-    return
-  }
-  else{
-    res.send("Test complete. All good.")
-  }
+  res.send("Test complete. All good.")
 })
 app.get("/all", (req, res) => {
   db.all("SELECT * FROM ammo", (error, rows) => {
